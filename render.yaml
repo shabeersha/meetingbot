@@ -14,7 +14,7 @@ services:
     name: meetingbot-backend
     plan: free
     branch: main
-    rootDir: src/backend
+    rootDir: src/server
     buildCommand: corepack enable && pnpm install && pnpm build
     startCommand: pnpm start
     envVars:
@@ -32,7 +32,7 @@ services:
     name: meetingbot-frontend
     plan: free
     branch: main
-    rootDir: src/frontend
+    rootDir: src/landing-page
     buildCommand: corepack enable && pnpm install && pnpm build
     startCommand: pnpm start
     envVars:
