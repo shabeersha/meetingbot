@@ -1,22 +1,17 @@
-# render.yaml — valid Render Blueprint for MeetingBot
-
 databases:
   - name: meetingbot-db
     plan: free
     region: oregon
-    # Optional: postgresMajorVersion: "17"
-    # Optional: databaseName: meetingbot_db
-    # Optional: user: meetingbot_user
 
 services:
+  # Backend (Node API)
   - type: web
     runtime: node
     name: meetingbot-backend
     plan: free
     branch: main
-    rootDir: src/server
-    buildCommand: corepack enable && pnpm install && pnpm build
-    startCommand: pnpm start
+    buildCommand: cd src/server && npx pnpm@latest install && npx pnpm@latest build
+    startCommand: cd src/server && npx pnpm@latest start
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -27,28 +22,13 @@ services:
       - key: NODE_ENV
         value: production
 
-  # - type: web
-  #   runtime: node
-  #   name: meetingbot-frontend
-  #   plan: free
-  #   branch: main
-  #   rootDir: src/landing-page
-  #   buildCommand: corepack enable && pnpm install && pnpm build
-  #   startCommand: pnpm start
-  #   envVars:
-  #     - key: NEXT_PUBLIC_API_URL
-  #       # update this after backend URL is available if needed
-  #       value: https://meetingbot-backend.onrender.com
-  #     - key: NODE_ENV
-  #       value: production
-
-
+  # Frontend (static Next.js export)
   - type: web
     runtime: node
     name: meetingbot-frontend
     plan: free
     branch: main
-    buildCommand: corepack enable && cd src/landing-page && pnpm install && pnpm build
+    buildCommand: cd src/landing-page && npx pnpm@latest install && npx pnpm@latest build
     startCommand: cd src/landing-page && npx serve@latest out -p $PORT
     envVars:
       - key: NEXT_PUBLIC_API_URL
@@ -56,14 +36,14 @@ services:
       - key: NODE_ENV
         value: production
 
+  # Bots (background worker)
   - type: worker
     runtime: node
     name: meetingbot-bots
     plan: free
     branch: main
-    rootDir: src/bots
-    buildCommand: corepack enable && pnpm install && pnpm build
-    startCommand: pnpm start
+    buildCommand: cd src/bots && npx pnpm@latest install && npx pnpm@latest build
+    startCommand: cd src/bots && npx pnpm@latest start
     envVars:
       - key: DATABASE_URL
         fromDatabase:
