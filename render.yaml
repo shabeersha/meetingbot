@@ -27,17 +27,31 @@ services:
       - key: NODE_ENV
         value: production
 
+  # - type: web
+  #   runtime: node
+  #   name: meetingbot-frontend
+  #   plan: free
+  #   branch: main
+  #   rootDir: src/landing-page
+  #   buildCommand: corepack enable && pnpm install && pnpm build
+  #   startCommand: pnpm start
+  #   envVars:
+  #     - key: NEXT_PUBLIC_API_URL
+  #       # update this after backend URL is available if needed
+  #       value: https://meetingbot-backend.onrender.com
+  #     - key: NODE_ENV
+  #       value: production
+
+
   - type: web
     runtime: node
     name: meetingbot-frontend
     plan: free
     branch: main
-    rootDir: src/landing-page
-    buildCommand: corepack enable && pnpm install && pnpm build
-    startCommand: pnpm start
+    buildCommand: corepack enable && cd src/landing-page && pnpm install && pnpm build
+    startCommand: cd src/landing-page && npx serve@latest out -p $PORT
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        # update this after backend URL is available if needed
         value: https://meetingbot-backend.onrender.com
       - key: NODE_ENV
         value: production
