@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: meetingbot-backend
+    env: node
+    plan: free
+    branch: main
+    path: src/backend
+    buildCommand: pnpm install && pnpm --filter ./src/backend build
+    startCommand: pnpm --filter ./src/backend start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase: meetingbot-db
+      - key: JWT_SECRET
+        value: REPLACE_WITH_A_STRONG_SECRET
+      - key: NODE_ENV
+        value: production
+  - type: web
+    name: meetingbot-frontend
+    env: node
+    plan: free
+    branch: main
+    path: src/frontend
+    buildCommand: pnpm install && pnpm --filter ./src/frontend build
+    startCommand: pnpm --filter ./src/frontend start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://meetingbot-backend.onrender.com
+      - key: NODE_ENV
+        value: production
+  - type: worker
+    name: meetingbot-bots
+    env: node
+    plan: free
+    branch: main
+    path: src/bots
+    buildCommand: pnpm install && pnpm --filter ./src/bots build
+    startCommand: pnpm --filter ./src/bots start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase: meetingbot-db
+      - key: JWT_SECRET
+        value: REPLACE_WITH_A_STRONG_SECRET
+databases:
+  - name: meetingbot-db
+    engine: postgres
+    plan: free
+    region: oregon
+    notes: "Persistent Postgres database for MeetingBot. Will expose DATABASE_URL to services via env var reference above."
