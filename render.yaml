@@ -1,13 +1,17 @@
+# render.yaml — valid Render Blueprint for MeetingBot
+
 databases:
   - name: meetingbot-db
-    engine: postgres
     plan: free
     region: oregon
+    # Optional: postgresMajorVersion: "17"
+    # Optional: databaseName: meetingbot_db
+    # Optional: user: meetingbot_user
 
 services:
   - type: web
+    runtime: node
     name: meetingbot-backend
-    env: node
     plan: free
     branch: main
     rootDir: src/backend
@@ -15,15 +19,17 @@ services:
     startCommand: pnpm start
     envVars:
       - key: DATABASE_URL
-        fromDatabase: meetingbot-db
+        fromDatabase:
+          name: meetingbot-db
+          property: connectionString
       - key: JWT_SECRET
         value: CHANGE_ME_TO_A_SECURE_RANDOM_SECRET
       - key: NODE_ENV
         value: production
 
   - type: web
+    runtime: node
     name: meetingbot-frontend
-    env: node
     plan: free
     branch: main
     rootDir: src/frontend
@@ -31,14 +37,14 @@ services:
     startCommand: pnpm start
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        # 👇 Update this automatically after backend is deployed
+        # update this after backend URL is available if needed
         value: https://meetingbot-backend.onrender.com
       - key: NODE_ENV
         value: production
 
   - type: worker
+    runtime: node
     name: meetingbot-bots
-    env: node
     plan: free
     branch: main
     rootDir: src/bots
@@ -46,6 +52,8 @@ services:
     startCommand: pnpm start
     envVars:
       - key: DATABASE_URL
-        fromDatabase: meetingbot-db
+        fromDatabase:
+          name: meetingbot-db
+          property: connectionString
       - key: JWT_SECRET
         value: CHANGE_ME_TO_A_SECURE_RANDOM_SECRET
